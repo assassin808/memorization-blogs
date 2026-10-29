@@ -1,0 +1,403 @@
+<title>GSS in 15 Seconds</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one 16:9 film frame on a quiet page, shot list underneath. The frame keeps the
+   Anthropic-style ivory look in both themes, because it is the video itself. */
+:root {
+  --ivory: #FAF9F5;      /* frame ground */
+  --pampas: #F0EEE6;     /* soft panels */
+  --oat: #E3DACC;        /* low-signal tokens */
+  --cloud: #B0AEA5;      /* quiet text in frame */
+  --slate: #141413;      /* ink */
+  --clay: #D97757;       /* the one accent: memorized tokens */
+  --olive: #788C5D;      /* corrected */
+  --sky: #6A9BCC;        /* untouched tokens */
+
+  --bg: #F5F3EC;
+  --fg: #141413;
+  --muted: #6B6A64;
+  --line: #DEDAD0;
+  --panel: #FAF9F5;
+  --accent: #C2603F;
+
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) {
+    --bg: #1B1A18; --fg: #F0EEE6; --muted: #A3A199; --line: #34322E; --panel: #23221F; --accent: #E58C6C;
+    color-scheme: dark;
+  }
+}
+:root[data-theme="dark"] {
+  --bg: #1B1A18; --fg: #F0EEE6; --muted: #A3A199; --line: #34322E; --panel: #23221F; --accent: #E58C6C;
+  color-scheme: dark;
+}
+
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 65ch; }
+
+/* ---------- the film frame ---------- */
+.player { display: grid; gap: 12px; }
+.viewport { position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+  border-radius: 10px; background: var(--ivory); box-shadow: 0 1px 0 var(--line), 0 12px 40px rgba(20,20,19,.10); }
+.frame { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0;
+  background: var(--ivory); color: var(--slate); font-family: var(--sans); overflow: hidden; }
+.scene { position: absolute; inset: 0; padding: 96px 120px; display: flex; flex-direction: column; gap: 28px; }
+.f-eyebrow { font-family: var(--mono); font-size: 20px; letter-spacing: .1em; text-transform: uppercase; color: #8A887F; }
+.f-head { font-family: var(--serif); font-weight: 400; font-size: 76px; line-height: 1.05; letter-spacing: -.01em; margin: 0; max-width: 1200px; text-wrap: balance; }
+.f-sub { font-size: 28px; color: #5E5D58; margin: 0; max-width: 1100px; }
+
+/* scene 1 */
+.sentence { font-family: var(--serif); font-size: 84px; line-height: 1.15; margin-top: 150px; display: flex; flex-wrap: wrap; gap: 0 24px; }
+.tok { display: inline-block; }
+.memgrp { display: inline-flex; gap: 6px; white-space: nowrap; }
+.tok.mem { font-family: var(--mono); font-size: 72px; padding: 0 10px; border-radius: 8px; background: rgba(217,119,87,.16); color: var(--clay); box-shadow: inset 0 -5px 0 var(--clay); }
+.tags { display: flex; gap: 14px; }
+.tag { font-family: var(--mono); font-size: 20px; padding: 8px 16px; border: 1.5px solid var(--slate); border-radius: 999px; }
+
+/* scene 2 */
+.bars { position: relative; height: 300px; margin-top: 10px; }
+.bars svg { width: 100%; height: 100%; overflow: visible; }
+.stat2 { display: flex; align-items: center; gap: 30px; }
+.stat2 b { font-family: var(--serif); font-weight: 400; font-size: 120px; line-height: 1; color: var(--clay); }
+.stat2 .txt { font-size: 32px; line-height: 1.3; max-width: 900px; display: grid; gap: 8px; }
+.src { font-family: var(--mono); font-size: 18px; color: #8A887F; }
+
+/* scene 3 */
+.flow { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; }
+
+/* scene 4 */
+.results { display: grid; grid-template-columns: 1.6fr 1fr 1.15fr; gap: 56px; margin-top: 70px; align-items: end; }
+.res { display: grid; gap: 14px; border-top: 2px solid var(--slate); padding-top: 22px; }
+.res .big { white-space: nowrap; font-family: var(--serif); font-size: 128px; line-height: .95; letter-spacing: -.02em; }
+.res .mid { white-space: nowrap; font-family: var(--serif); font-size: 100px; line-height: .95; letter-spacing: -.02em; }
+.res .lab { font-size: 26px; line-height: 1.3; color: #3D3C38; }
+.res .lab small { display: block; font-family: var(--mono); font-size: 17px; color: #8A887F; margin-top: 6px; }
+.arrow { color: var(--clay); }
+
+/* scene 5 */
+.title-card { justify-content: center; gap: 34px; }
+.title-card .f-head { font-size: 96px; max-width: 1250px; }
+.authors { font-size: 30px; }
+.authors small { display: block; font-size: 24px; color: #6B6A64; margin-top: 6px; }
+.venue { display: flex; gap: 18px; align-items: center; }
+.pill { font-family: var(--mono); font-size: 22px; padding: 10px 20px; border-radius: 999px; background: var(--slate); color: var(--ivory); }
+.pill.ghost { background: transparent; color: var(--slate); border: 1.5px solid var(--slate); }
+
+/* subtitles */
+.subs { position: absolute; left: 0; right: 0; bottom: 34px; display: flex; justify-content: center; pointer-events: none; }
+.subs span { font-size: 30px; padding: 10px 22px; border-radius: 8px; background: rgba(20,20,19,.86); color: var(--ivory); max-width: 1300px; text-align: center; }
+.frame.nosubs .subs { display: none; }
+.progress { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--clay); }
+
+/* ---------- controls ---------- */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+button { font: 500 14px var(--sans); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+button:hover { border-color: var(--muted); }
+button:focus-visible, input:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scrub { flex: 1 1 240px; min-width: 0; display: grid; gap: 4px; }
+.scrub input { width: 100%; accent-color: var(--accent); }
+.marks { position: relative; height: 16px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.marks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.time { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 92px; text-align: right; }
+label.chk { display: flex; gap: 6px; align-items: center; font-size: 14px; color: var(--muted); }
+
+/* ---------- shot list ---------- */
+h2 { font-family: var(--serif); font-weight: 400; font-size: 26px; margin: 12px 0 0; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+td.t { font-family: var(--mono); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+td.vo { font-family: var(--serif); font-size: 17px; }
+td .ref { display: block; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 6px; }
+tr.row { cursor: pointer; }
+tr.row:hover td, tr.row.on td { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+.notes { display: grid; grid-template-columns: repeat(auto-fit, minmax(240px, 1fr)); gap: 20px; }
+.notes div { min-width: 0; }
+.notes h3 { font-size: 14px; font-weight: 600; margin: 0 0 6px; }
+.notes p, .notes ul { margin: 0; color: var(--muted); font-size: 15px; }
+.notes ul { padding-left: 18px; }
+.sw { display: inline-block; width: 12px; height: 12px; border-radius: 3px; vertical-align: -1px; margin-right: 4px; }
+
+/* MP4 export: the frame only, edge to edge */
+.export .wrap { display: block; padding: 0; max-width: none; }
+.export header, .export .controls, .export .wrap > section:not(.player) { display: none; }
+.export .viewport { width: 1600px; border-radius: 0; box-shadow: none; }
+@media (prefers-reduced-motion: reduce) { .progress { transition: none; } }
+</style>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">NeurIPS 2026 poster · video cut 1 of 2 · 15 seconds</div>
+    <h1>Mitigating Memorization Where It Happens, in 15 seconds</h1>
+    <p>Five shots: the problem, the insight, the method, the result, the title card. Press play, or click a row in the shot list to jump to it.</p>
+  </header>
+
+  <section class="player" aria-label="15 second video preview">
+    <div class="viewport" id="viewport">
+      <div class="frame" id="frame">
+
+        <!-- 1 · Hook -->
+        <div class="scene" id="s1">
+          <div class="f-eyebrow">A model, prompted with its training data</div>
+          <div class="sentence" id="sentence">
+            <span class="tok">Alice’s</span><span class="tok">phone</span><span class="tok">number</span><span class="tok">is</span>
+            <span class="memgrp"><span class="tok mem" data-k="0">555</span><span class="tok mem" data-k="1">-01</span><span class="tok mem" data-k="2">42</span></span>
+          </div>
+          <p class="f-sub" id="s1sub">LLMs can reproduce training sequences verbatim.</p>
+          <div class="tags" id="s1tags"><span class="tag">privacy</span><span class="tag">copyright</span></div>
+        </div>
+
+        <!-- 2 · Insight -->
+        <div class="scene" id="s2">
+          <div class="f-eyebrow">Token-level signal · ω<sub>t</sub> = log p<sub>target</sub> − log p<sub>ref</sub></div>
+          <h2 class="f-head" style="font-size:72px;margin:0">Memorization isn’t everywhere.</h2>
+          <div class="bars"><svg id="bars" viewBox="0 0 1360 330" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+          <div class="stat2" id="stat2"><b>10%</b><span class="txt"><span>of token positions carry up to 89% of the memorization signal.</span><span class="src">Across 12 model–dataset settings · Section 3</span></span></div>
+        </div>
+
+        <!-- 3 · Method -->
+        <div class="scene" id="s3">
+          <div class="f-eyebrow">Gated Subspace Steering (GSS)</div>
+          <h2 class="f-head" style="font-size:72px;margin:0">Fix it only where it happens.</h2>
+          <svg class="flow" id="flow" viewBox="0 0 1600 900" aria-hidden="true"></svg>
+        </div>
+
+        <!-- 4 · Result -->
+        <div class="scene" id="s4">
+          <div class="f-eyebrow">Results · four benchmarks</div>
+          <h2 class="f-head" style="font-size:72px;margin:0">Less recall, at a fraction of the cost.</h2>
+          <div class="results">
+            <div class="res" id="r1"><div class="big"><span>89%</span> <span class="arrow">→</span> <span id="count">89%</span></div>
+              <div class="lab">memorization on Pythia‑6.9B<small>(n,k)-memorization · 89.31 → 6.96 · Table 2</small></div></div>
+            <div class="res" id="r2"><div class="mid">0%</div>
+              <div class="lab">memorization on TinyMem, accuracy kept<small>96.98 vs 97.00 baseline · Table 1</small></div></div>
+            <div class="res" id="r3"><div class="mid">10–100×</div>
+              <div class="lab">less compute than optimization-based methods<small>no weight updates · Abstract</small></div></div>
+          </div>
+        </div>
+
+        <!-- 5 · Title card -->
+        <div class="scene title-card" id="s5">
+          <div class="f-eyebrow">NeurIPS 2026 · Poster</div>
+          <h2 class="f-head" style="margin:0">Mitigating Memorization Where It&nbsp;Happens</h2>
+          <div class="authors">Xuanqi Zhang* · Haoyang Shang* · Xiaoxiao Li
+            <small>The University of British Columbia · Vector Institute</small></div>
+          <div class="venue"><span class="pill">arXiv 2602.08901</span><span class="pill ghost">probe · gate · steer</span></div>
+        </div>
+
+        <div class="subs"><span id="subtitle"></span></div>
+        <div class="progress" id="bar"></div>
+      </div>
+    </div>
+
+    <div class="controls">
+      <button id="play" type="button">Pause</button>
+      <button id="restart" type="button">Restart</button>
+      <div class="scrub">
+        <input id="scrub" type="range" min="0" max="15" step="0.01" value="0" aria-label="Timeline">
+        <div class="marks" id="marks"></div>
+      </div>
+      <span class="time" id="time">0.0 / 15.0 s</span>
+      <label class="chk"><input id="subs" type="checkbox" checked> Subtitles</label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Shot list</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Time</th><th>Beat</th><th>Voiceover</th><th>On screen</th></tr></thead>
+        <tbody id="shots"></tbody>
+      </table>
+    </div>
+  </section>
+
+  <section class="notes">
+    <div><h3>Message in one line</h3><p>LLMs memorize in a few tokens, so GSS detects those tokens and steers only them, cutting verbatim recall without retraining.</p></div>
+    <div><h3>Look</h3><ul>
+      <li>Ivory ground, near-black ink, generous margins</li>
+      <li><span class="sw" style="background:#D97757"></span>Clay marks memorized tokens, nothing else</li>
+      <li><span class="sw" style="background:#788C5D"></span>Olive marks a corrected token</li>
+      <li>Serif headlines, sans body, mono for tokens and math</li></ul></div>
+    <div><h3>Audio</h3><p>About 35 words of voiceover, roughly 2.5 words per second. Subtitles are burned in so the clip works muted on social feeds.</p></div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const D = 15;
+  const SCENES = [
+    { id: 's1', a: 0,    b: 3.0,  beat: 'Hook',    vo: 'Language models can repeat their training data, word for word.',
+      screen: 'The prompt “Alice’s phone number is” completes with the memorized number, highlighted in clay. Tags: privacy, copyright.', ref: 'Introduction; Section 3 example' },
+    { id: 's2', a: 3.0,  b: 6.5,  beat: 'Insight', vo: 'But memorization lives in just a few tokens.',
+      screen: 'A row of per-token signal bars grows in. Most stay low, a few spike in clay. Stat: 10% of positions carry up to 89% of the signal.', ref: 'Fig. 1; Section 3 concentration (30–89%)' },
+    { id: 's3', a: 6.5,  b: 10.6, beat: 'Method',  vo: 'So we fix it only there: probe, gate, steer.',
+      screen: 'Tokens flow through Probe → Gate. Flagged tokens are lifted into Steer and turn olive. The rest pass below, untouched.', ref: 'Fig. 2, Fig. 3; Eq. 10' },
+    { id: 's4', a: 10.6, b: 13.4, beat: 'Result',  vo: 'Memorization falls from 89 to 7 percent.',
+      screen: '89% → 7% counts down (Pythia‑6.9B). Then 0% on TinyMem with accuracy kept, and 10–100× less compute.', ref: 'Table 1, Table 2, Abstract' },
+    { id: 's5', a: 13.4, b: 15,   beat: 'Close',   vo: 'Mitigating Memorization Where It Happens. NeurIPS 2026.',
+      screen: 'Title, authors, affiliations, arXiv ID.', ref: 'Title page' }
+  ];
+  const SUBS = [
+    [0.15, 2.9, SCENES[0].vo], [3.15, 6.4, SCENES[1].vo], [6.65, 10.5, SCENES[2].vo],
+    [10.75, 13.3, SCENES[3].vo], [13.55, 15.01, SCENES[4].vo]
+  ];
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const ease = (x) => 1 - Math.pow(1 - x, 3);
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+
+  /* ---- scene 2 bars: a right-skewed token signal ---- */
+  const N = 48, peaks = { 6: .78, 7: .95, 18: .62, 29: .88, 30: 1, 31: .7, 41: .58 };
+  const vals = Array.from({ length: N }, (_, i) => peaks[i] ?? (0.05 + 0.13 * Math.abs(Math.sin(i * 2.3 + 1.1))));
+  const barsSvg = $('bars');
+  const bw = 1360 / N;
+  mk('line', { x1: 0, x2: 1360, y1: 300, y2: 300, stroke: '#141413', 'stroke-width': 2 }, barsSvg);
+  const thr = mk('line', { x1: 0, x2: 1360, y1: 300 - .34 * 280, y2: 300 - .34 * 280, stroke: '#8A887F', 'stroke-width': 2, 'stroke-dasharray': '8 8' }, barsSvg);
+  const thrLab = mk('text', { x: 548, y: 300 - .34 * 280 - 12, 'text-anchor': 'start', fill: '#8A887F', 'font-family': 'JetBrains Mono, monospace', 'font-size': 18 }, barsSvg);
+  thrLab.textContent = 'most tokens: near zero';
+  const bars = vals.map((v, i) => mk('rect', { x: i * bw + 4, width: bw - 8, y: 300, height: 0, rx: 3, fill: v > .34 ? '#D97757' : '#E3DACC' }, barsSvg));
+
+  /* ---- scene 3 flow diagram ---- */
+  const flow = $('flow');
+  const Y = 560, UP = 420, DOWN = 700, X0 = 150, X1 = 1470;
+  const lane = (d, c, w, dash) => mk('path', { d, fill: 'none', stroke: c, 'stroke-width': w, 'stroke-dasharray': dash || '', 'stroke-linecap': 'round' }, flow);
+  lane(`M${X0} ${Y} H 760 C 860 ${Y}, 860 ${UP}, 960 ${UP} H ${X1}`, '#E3DACC', 4);
+  lane(`M760 ${Y} C 860 ${Y}, 860 ${DOWN}, 960 ${DOWN} H ${X1}`, '#E3DACC', 4, '2 12');
+  const FLAGS = [0, 1, 0, 0, 1, 0, 0, 1, 0, 0, 0];
+  const dots = FLAGS.map((f) => mk('circle', { r: 15, cx: -50, cy: Y, fill: f ? '#D97757' : '#6A9BCC' }, flow));
+  function node(x, y, w, title, formula) {
+    const g = mk('g', {}, flow);
+    const r = mk('rect', { x: x - w / 2, y: y - 62, width: w, height: 124, rx: 16, fill: '#FAF9F5', stroke: '#141413', 'stroke-width': 2.5 }, g);
+    const t = mk('text', { x, y: y - 8, 'text-anchor': 'middle', 'font-family': 'DM Sans, sans-serif', 'font-size': 34, 'font-weight': 600, fill: '#141413' }, g); t.textContent = title;
+    const f = mk('text', { x, y: y + 34, 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace', 'font-size': 22, fill: '#5E5D58' }, g); f.textContent = formula;
+    return { g, r };
+  }
+  const nProbe = node(400, Y, 250, 'Probe', '⟨h, u⟩');
+  const nGate = node(700, Y, 210, 'Gate', '> ε ?');
+  const nSteer = node(1110, UP, 270, 'Steer', 'h − α·v');
+  const lab = (x, y, s, c) => { const t = mk('text', { x, y, 'font-family': 'JetBrains Mono, monospace', 'font-size': 20, fill: c || '#8A887F' }, flow); t.textContent = s; return t; };
+  const labUp = lab(1270, UP - 26, 'memorized → corrected', '#788C5D');
+  const labDown = lab(1080, DOWN - 22, 'everything else → untouched');
+  const foot = mk('text', { x: 120, y: 318, 'font-family': 'DM Sans, sans-serif', 'font-size': 26, fill: '#5E5D58' }, flow);
+  foot.textContent = 'Closed-form directions from one SVD · no weight updates · no reference model at inference';
+
+  function dotPos(u, flagged) {
+    const x = X0 + u * (X1 - X0);
+    let y = Y;
+    if (x > 760) { const k = ease(seg(x, 760, 960)); y = flagged ? Y + (UP - Y) * k : Y + (DOWN - Y) * k; }
+    return [x, y];
+  }
+
+  /* ---- shot list + marks ---- */
+  const tbody = $('shots');
+  SCENES.forEach((s) => {
+    const tr = document.createElement('tr'); tr.className = 'row'; tr.tabIndex = 0; tr.dataset.a = s.a;
+    tr.innerHTML = `<td class="t">${s.a.toFixed(1)}–${s.b.toFixed(1)}s</td><td><strong>${s.beat}</strong></td><td class="vo">“${s.vo}”</td><td>${s.screen}<span class="ref">${s.ref}</span></td>`;
+    const go = () => { seek(s.a + 0.01); setPlaying(true); };
+    tr.addEventListener('click', go); tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    tbody.appendChild(tr);
+    const m = document.createElement('span'); m.style.left = (s.a / D * 100) + '%'; m.textContent = s.beat; $('marks').appendChild(m);
+  });
+  $('marks').firstChild.style.transform = 'none';
+  const rows = [...tbody.children];
+
+  /* ---- render one frame at time t (pure: used by player and by MP4 export) ---- */
+  function render(t) {
+    SCENES.forEach((s, i) => {
+      const el = $(s.id);
+      let o = (t >= s.a && t <= s.b) ? 1 : 0;
+      if (o && i > 0) o = Math.min(o, seg(t, s.a, s.a + .35));
+      if (o && i < SCENES.length - 1) o = Math.min(o, 1 - seg(t, s.b - .3, s.b));
+      el.style.opacity = o; el.style.visibility = o > 0 ? 'visible' : 'hidden';
+      el.style.transform = `translateY(${i ? (1 - ease(seg(t, s.a, s.a + .7))) * 18 : 0}px)`;
+      rows[i] && rows[i].classList.toggle('on', t >= s.a && t < s.b);
+    });
+
+    // 1 · memorized tokens appear one by one
+    document.querySelectorAll('#sentence .mem').forEach((el) => {
+      const k = +el.dataset.k, p = ease(seg(t, .75 + k * .32, 1.05 + k * .32));
+      el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 14}px)`;
+    });
+    const p1 = ease(seg(t, 1.9, 2.3)); $('s1sub').style.opacity = p1; $('s1tags').style.opacity = p1;
+
+    // 2 · bars grow, then the stat lands
+    bars.forEach((r, i) => { const h = vals[i] * 280 * ease(seg(t, 3.3 + i * .014, 3.95 + i * .014)); r.setAttribute('y', 300 - h); r.setAttribute('height', h); });
+    const pt = ease(seg(t, 4.1, 4.5)); thr.style.opacity = pt; thrLab.style.opacity = pt;
+    const ps = ease(seg(t, 4.5, 5.0)); $('stat2').style.opacity = ps; $('stat2').style.transform = `translateY(${(1 - ps) * 16}px)`;
+
+    // 3 · nodes appear, tokens flow; flagged ones go through Steer and turn olive
+    [nProbe, nGate, nSteer].forEach((n, i) => { const p = ease(seg(t, 6.7 + i * .2, 7.1 + i * .2)); n.g.style.opacity = p; });
+    labUp.style.opacity = labDown.style.opacity = ease(seg(t, 7.4, 7.8));
+    foot.style.opacity = ease(seg(t, 8.6, 9.0));
+    let gateHot = false;
+    dots.forEach((d, i) => {
+      const u = seg(t, 7.0 + i * .26, 9.3 + i * .26), f = FLAGS[i];
+      if (u <= 0 || u >= 1) { d.style.opacity = 0; return; }
+      const [x, y] = dotPos(u, f);
+      d.setAttribute('cx', x); d.setAttribute('cy', y);
+      d.style.opacity = Math.min(1, u * 12, (1 - u) * 12);
+      if (f) { d.setAttribute('fill', x > 1110 ? '#788C5D' : '#D97757'); if (x > 600 && x < 820) gateHot = true; }
+    });
+    nGate.r.setAttribute('stroke', gateHot ? '#D97757' : '#141413');
+    nGate.r.setAttribute('stroke-width', gateHot ? 4 : 2.5);
+
+    // 4 · count down 89 → 7, then the other two results
+    const c = ease(seg(t, 11.0, 12.0));
+    $('count').textContent = Math.round(89.31 - (89.31 - 6.96) * c) + '%';
+    $('count').style.color = c > .02 ? '#D97757' : '';
+    $('r2').style.opacity = ease(seg(t, 11.6, 12.0));
+    $('r3').style.opacity = ease(seg(t, 12.0, 12.4));
+
+    // subtitles + progress
+    const sub = SUBS.find(([a, b]) => t >= a && t < b);
+    $('subtitle').textContent = sub ? sub[2] : '';
+    $('subtitle').parentElement.style.opacity = sub ? 1 : 0;
+    $('bar').style.width = (t / D * 100) + '%';
+  }
+
+  /* ---- player ---- */
+  const frame = $('frame'), vp = $('viewport');
+  const fit = () => { frame.style.transform = `scale(${vp.clientWidth / 1600})`; };
+  new ResizeObserver(fit).observe(vp); fit();
+
+  const exportMode = /[?&]export/.test(location.search);
+  if (exportMode) { document.documentElement.classList.add('export'); fit(); }
+  let t = 0, playing = !exportMode, last = performance.now();
+  const reduce = matchMedia('(prefers-reduced-motion: reduce)').matches;
+  if (reduce) { playing = false; t = 4.9; }
+
+  function seek(x) { t = Math.max(0, Math.min(D, x)); $('scrub').value = t; $('time').textContent = `${t.toFixed(1)} / 15.0 s`; render(t); }
+  function setPlaying(p) { playing = p; $('play').textContent = p ? 'Pause' : 'Play'; last = performance.now(); }
+  $('play').addEventListener('click', () => { if (!playing && t >= D) seek(0); setPlaying(!playing); });
+  $('restart').addEventListener('click', () => { seek(0); setPlaying(true); });
+  $('scrub').addEventListener('input', (e) => { setPlaying(false); seek(+e.target.value); });
+  $('subs').addEventListener('change', (e) => frame.classList.toggle('nosubs', !e.target.checked));
+
+  function tick(now) {
+    if (playing) { const dt = (now - last) / 1000; seek(t + dt); if (t >= D) { setPlaying(false); setTimeout(() => { seek(0); setPlaying(true); }, 1800); } }
+    last = now; requestAnimationFrame(tick);
+  }
+  setPlaying(playing); seek(t); requestAnimationFrame(tick);
+
+  // hook for the MP4 exporter: render an exact frame
+  window.__renderAt = (x) => { setPlaying(false); seek(x); };
+})();
+</script>
