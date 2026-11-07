@@ -22,9 +22,9 @@ SPOKEN = [
     "Language models can memorize their training data, and repeat it word for word.",
     "Most fixes correct every token the same way, and the model gets worse at everything else.",
     "Compared with a reference model, the memorization signal is concentrated. Ten percent of tokens carry up to eighty-nine percent of it.",
-    "So G.S.S. fixes it only there. A probe reads each token, a gate checks a threshold, and a steer corrects just the flagged ones.",
+    "So GSS fixes it only there. A probe reads each token, a gate checks a threshold, and a steer corrects just the flagged ones.",
     "On Pythia six point nine B, memorization falls from eighty-nine to seven percent, with ten to a hundred times less compute than optimization methods.",
-    "Mitigating Memorization Where It Happens. See you at NeurIPS.",
+    "Mitigating Memorization Where It Happens. See you at Neurips.",
 ]
 MIN_LEN = [6.0, 6.5, 8.6, 9.6, 8.8, 5.0]   # shortest each shot may be, so animations finish
 LEAD, TAIL = 0.4, 0.75                      # silence before / after each line
@@ -146,7 +146,7 @@ def main():
     starts = np.concatenate([[0], np.cumsum(timing["durations"])])
     D = float(starts[-1])
     windows = [(starts[i] + v0, starts[i] + v0 + vl) for i, (v0, vl) in enumerate(timing["vo"])] if clips else []
-    mix = music(D, windows)
+    mix = music(D, windows) * (0.35 if clips else 1.0)  # keep music well under the voice
     if clips:
         for (a, _), c in zip(windows, clips):
             s = int(a * SR); mix[s: s + len(c)] += c[: len(mix) - s] * 0.9

@@ -1,6 +1,6 @@
 # 15-second video: Mitigating Memorization Where It Happens
 
-NeurIPS 2026 poster · arXiv 2602.08901 · cut 1 of 2 (short teaser)
+NeurIPS 2026 · arXiv 2602.08901 · cut 1 of 2 (short teaser)
 
 **One-line message:** LLMs memorize in a few tokens, so GSS finds those tokens and steers only them, cutting verbatim recall without retraining.
 
