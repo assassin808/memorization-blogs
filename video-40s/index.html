@@ -1,0 +1,410 @@
+<title>GSS Explainer Video</title>
+<meta name="claude:viewport-fit-sides" content="cover">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Source+Serif+4:ital,opsz,wght@0,8..60,400;0,8..60,500;1,8..60,400&family=DM+Sans:wght@400;500;600&family=JetBrains+Mono:wght@400;500&display=swap">
+<style>
+/* Layout: one 16:9 film frame on a quiet page, shot list underneath. The frame keeps the
+   Anthropic-style ivory look in both themes, because it is the video itself. */
+:root {
+  --ivory: #FAF9F5; --pampas: #F0EEE6; --oat: #E3DACC; --slate: #141413;
+  --clay: #D97757; --olive: #788C5D; --sky: #6A9BCC;
+
+  --bg: #F5F3EC; --fg: #141413; --muted: #6B6A64; --line: #DEDAD0; --panel: #FAF9F5; --accent: #C2603F;
+
+  --serif: "Source Serif 4", "Iowan Old Style", Georgia, serif;
+  --sans: "DM Sans", system-ui, -apple-system, "Segoe UI", sans-serif;
+  --mono: "JetBrains Mono", ui-monospace, Menlo, Consolas, monospace;
+}
+@media (prefers-color-scheme: dark) {
+  :root:not([data-theme="light"]) { --bg: #1B1A18; --fg: #F0EEE6; --muted: #A3A199; --line: #34322E; --panel: #23221F; --accent: #E58C6C; color-scheme: dark; }
+}
+:root[data-theme="dark"] { --bg: #1B1A18; --fg: #F0EEE6; --muted: #A3A199; --line: #34322E; --panel: #23221F; --accent: #E58C6C; color-scheme: dark; }
+
+body { background: var(--bg); color: var(--fg); font-family: var(--sans); font-size: 16px; line-height: 1.55; }
+.wrap { max-width: 1120px; margin: 0 auto; padding-block: 40px 72px;
+  padding-left: max(16px, env(safe-area-inset-left, 0px)); padding-right: max(16px, env(safe-area-inset-right, 0px));
+  display: grid; gap: 28px; }
+header { display: grid; gap: 6px; }
+.eyebrow { font-family: var(--mono); font-size: 12px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); }
+h1 { font-family: var(--serif); font-weight: 400; font-size: clamp(28px, 4vw, 40px); line-height: 1.15; margin: 0; text-wrap: balance; }
+header p { margin: 0; color: var(--muted); max-width: 65ch; }
+
+/* ---------- film frame ---------- */
+.player { display: grid; gap: 12px; }
+.viewport { position: relative; width: 100%; max-width: 100%; aspect-ratio: 16 / 9; overflow: hidden;
+  border-radius: 10px; background: var(--ivory); box-shadow: 0 1px 0 var(--line), 0 12px 40px rgba(20,20,19,.10); }
+.frame { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; transform-origin: 0 0;
+  background: var(--ivory); color: var(--slate); font-family: var(--sans); overflow: hidden; }
+.scene { position: absolute; inset: 0; padding: 96px 120px; display: flex; flex-direction: column; gap: 28px; }
+.f-eyebrow { font-family: var(--mono); font-size: 20px; letter-spacing: .1em; text-transform: uppercase; color: #8A887F; }
+.f-head { font-family: var(--serif); font-weight: 400; font-size: 72px; line-height: 1.05; letter-spacing: -.01em; margin: 0; max-width: 1250px; text-wrap: balance; }
+.f-sub { font-size: 28px; color: #5E5D58; margin: 0; max-width: 1100px; }
+.src { font-family: var(--mono); font-size: 18px; color: #8A887F; }
+
+/* 1 hook */
+.sentence { font-family: var(--serif); font-size: 84px; line-height: 1.15; margin-top: 150px; display: flex; flex-wrap: wrap; gap: 0 24px; }
+.memgrp { display: inline-flex; gap: 6px; white-space: nowrap; }
+.tok.mem { font-family: var(--mono); font-size: 72px; padding: 0 10px; border-radius: 8px; background: rgba(217,119,87,.16); color: var(--clay); box-shadow: inset 0 -5px 0 var(--clay); }
+.tags { display: flex; gap: 14px; }
+.tag { font-family: var(--mono); font-size: 20px; padding: 8px 16px; border: 1.5px solid var(--slate); border-radius: 999px; }
+
+/* 2 problem */
+.chips { position: relative; display: flex; flex-wrap: nowrap; gap: 12px; margin-top: 40px; max-width: 1360px; width: max-content; }
+.chip { font-family: var(--mono); font-size: 30px; padding: 12px 16px; border-radius: 10px; background: var(--pampas); border: 1.5px solid #D6D1C4; }
+.chip.m { background: rgba(217,119,87,.16); border-color: var(--clay); color: var(--clay); }
+.sweep { position: absolute; top: -18px; bottom: -18px; width: 6px; border-radius: 3px; background: var(--slate); }
+.cost { display: flex; align-items: center; gap: 30px; margin-top: 30px; }
+.cost b { font-family: var(--serif); font-weight: 400; font-size: 110px; line-height: 1; white-space: nowrap; }
+.cost .txt { font-size: 30px; line-height: 1.3; display: grid; gap: 8px; max-width: 760px; }
+
+/* 3 insight */
+.bars { position: relative; height: 300px; margin-top: 10px; }
+.bars svg { width: 100%; height: 100%; overflow: visible; }
+.stat2 { display: flex; align-items: center; gap: 30px; }
+.stat2 b { font-family: var(--serif); font-weight: 400; font-size: 120px; line-height: 1; color: var(--clay); }
+.stat2 .txt { font-size: 32px; line-height: 1.3; max-width: 900px; display: grid; gap: 8px; }
+
+/* 4 method */
+.flow { position: absolute; left: 0; top: 0; width: 1600px; height: 900px; }
+
+/* 5 results */
+.results { display: grid; grid-template-columns: 1.6fr 1fr 1.15fr; gap: 56px; margin-top: 70px; align-items: end; }
+.res { display: grid; gap: 14px; border-top: 2px solid var(--slate); padding-top: 22px; }
+.res .big { white-space: nowrap; font-family: var(--serif); font-size: 128px; line-height: .95; letter-spacing: -.02em; }
+.res .mid { white-space: nowrap; font-family: var(--serif); font-size: 100px; line-height: .95; letter-spacing: -.02em; }
+.res .lab { font-size: 26px; line-height: 1.3; color: #3D3C38; }
+.res .lab small { display: block; font-family: var(--mono); font-size: 17px; color: #8A887F; margin-top: 6px; }
+.arrow { color: var(--clay); }
+
+/* 6 close */
+.title-card { justify-content: center; gap: 34px; }
+.title-card .f-head { font-size: 96px; }
+.authors { font-size: 30px; }
+.authors small { display: block; font-size: 24px; color: #6B6A64; margin-top: 6px; }
+.venue { display: flex; gap: 18px; align-items: center; }
+.pill { font-family: var(--mono); font-size: 22px; padding: 10px 20px; border-radius: 999px; background: var(--slate); color: var(--ivory); }
+.pill.ghost { background: transparent; color: var(--slate); border: 1.5px solid var(--slate); }
+
+.subs { position: absolute; left: 0; right: 0; bottom: 34px; display: flex; justify-content: center; pointer-events: none; }
+.subs span { font-size: 30px; padding: 10px 22px; border-radius: 8px; background: rgba(20,20,19,.86); color: var(--ivory); max-width: 1300px; text-align: center; }
+.frame.nosubs .subs { display: none; }
+.progress { position: absolute; left: 0; bottom: 0; height: 6px; background: var(--clay); }
+
+/* ---------- controls ---------- */
+.controls { display: flex; flex-wrap: wrap; align-items: center; gap: 12px; }
+button { font: 500 14px var(--sans); color: var(--fg); background: var(--panel); border: 1px solid var(--line); border-radius: 8px; padding: 8px 14px; cursor: pointer; }
+button:hover { border-color: var(--muted); }
+button.primary { background: var(--fg); color: var(--bg); border-color: var(--fg); }
+button:focus-visible, input:focus-visible, tr:focus-visible { outline: 2px solid var(--accent); outline-offset: 2px; }
+.scrub { flex: 1 1 240px; min-width: 0; display: grid; gap: 4px; }
+.scrub input { width: 100%; accent-color: var(--accent); }
+.marks { position: relative; height: 16px; font-family: var(--mono); font-size: 11px; color: var(--muted); }
+.marks span { position: absolute; transform: translateX(-50%); white-space: nowrap; }
+.time { font-family: var(--mono); font-size: 13px; color: var(--muted); font-variant-numeric: tabular-nums; min-width: 92px; text-align: right; }
+label.chk { display: flex; gap: 6px; align-items: center; font-size: 14px; color: var(--muted); }
+
+/* ---------- shot list ---------- */
+h2 { font-family: var(--serif); font-weight: 400; font-size: 26px; margin: 12px 0 0; }
+.table-wrap { overflow-x: auto; border: 1px solid var(--line); border-radius: 10px; background: var(--panel); }
+table { border-collapse: collapse; width: 100%; min-width: 760px; font-size: 15px; }
+th, td { text-align: left; vertical-align: top; padding: 14px 16px; border-bottom: 1px solid var(--line); }
+th { font-family: var(--mono); font-size: 11px; letter-spacing: .08em; text-transform: uppercase; color: var(--muted); font-weight: 500; }
+tr:last-child td { border-bottom: 0; }
+td.t { font-family: var(--mono); font-size: 13px; white-space: nowrap; font-variant-numeric: tabular-nums; }
+td.vo { font-family: var(--serif); font-size: 17px; }
+td .ref { display: block; font-family: var(--mono); font-size: 12px; color: var(--muted); margin-top: 6px; }
+tr.row { cursor: pointer; }
+tr.row:hover td, tr.row.on td { background: color-mix(in srgb, var(--accent) 8%, transparent); }
+
+.export .wrap { display: block; padding: 0; max-width: none; }
+.export header, .export .controls, .export .wrap > section:not(.player) { display: none; }
+.export .viewport { width: 1600px; border-radius: 0; box-shadow: none; }
+</style>
+
+<!-- Scene lengths and voiceover timing. tools/build.py rewrites this block from the real voice clips. -->
+<script id="timing" type="application/json">
+{"durations": [6.0, 6.5, 8.6, 9.6, 8.8, 5.0], "vo": [[0.4, 5.0], [0.4, 5.6], [0.4, 7.6], [0.4, 8.6], [0.4, 7.8], [0.4, 3.8]], "audio": false}
+</script>
+
+<div class="wrap">
+  <header>
+    <div class="eyebrow">NeurIPS 2026 poster · video cut 2 · about 45 seconds</div>
+    <h1>Mitigating Memorization Where It Happens, explained</h1>
+    <p>Six shots, each held long enough to read. Press <strong>Sound on</strong> for the voiceover and music, or click a row in the shot list to jump to it.</p>
+  </header>
+
+  <section class="player" aria-label="Video preview">
+    <div class="viewport" id="viewport">
+      <div class="frame" id="frame">
+
+        <div class="scene" id="s1">
+          <div class="f-eyebrow">A model, prompted with its training data</div>
+          <div class="sentence" id="sentence">
+            <span class="tok">Alice’s</span><span class="tok">phone</span><span class="tok">number</span><span class="tok">is</span>
+            <span class="memgrp"><span class="tok mem" data-k="0">555</span><span class="tok mem" data-k="1">-01</span><span class="tok mem" data-k="2">42</span></span>
+          </div>
+          <p class="f-sub" id="s1sub">LLMs can reproduce training sequences verbatim.</p>
+          <div class="tags" id="s1tags"><span class="tag">privacy</span><span class="tag">copyright</span></div>
+        </div>
+
+        <div class="scene" id="s2">
+          <div class="f-eyebrow">The usual fix</div>
+          <h2 class="f-head">Same correction on every token.</h2>
+          <div class="chips" id="chips"></div>
+          <div class="cost" id="cost"><b>97.0 <span class="arrow">→</span> 63.3</b>
+            <span class="txt"><span>accuracy after pruning-style suppression (Slim) on a TinyMem math model</span><span class="src">memorization reaches 0%, but reasoning breaks · Table 1</span></span></div>
+        </div>
+
+        <div class="scene" id="s3">
+          <div class="f-eyebrow">Token-level signal · ω<sub>t</sub> = log p<sub>target</sub> − log p<sub>ref</sub></div>
+          <h2 class="f-head">Memorization isn’t everywhere.</h2>
+          <div class="bars"><svg id="bars" viewBox="0 0 1360 330" preserveAspectRatio="none" aria-hidden="true"></svg></div>
+          <div class="stat2" id="stat2"><b>10%</b><span class="txt"><span>of token positions carry up to 89% of the memorization signal.</span><span class="src">Across 12 model–dataset settings · Section 3</span></span></div>
+        </div>
+
+        <div class="scene" id="s4">
+          <div class="f-eyebrow">Gated Subspace Steering (GSS)</div>
+          <h2 class="f-head">Fix it only where it happens.</h2>
+          <svg class="flow" id="flow" viewBox="0 0 1600 900" aria-hidden="true"></svg>
+        </div>
+
+        <div class="scene" id="s5">
+          <div class="f-eyebrow">Results · four benchmarks</div>
+          <h2 class="f-head">Less recall, at a fraction of the cost.</h2>
+          <div class="results">
+            <div class="res" id="r1"><div class="big"><span>89%</span> <span class="arrow">→</span> <span id="count">89%</span></div>
+              <div class="lab">memorization on Pythia‑6.9B<small>(n,k)-memorization · 89.31 → 6.96 · Table 2</small></div></div>
+            <div class="res" id="r2"><div class="mid">0%</div>
+              <div class="lab">memorization on TinyMem, accuracy kept<small>96.98 vs 97.00 baseline · Table 1</small></div></div>
+            <div class="res" id="r3"><div class="mid">10–100×</div>
+              <div class="lab">less compute than optimization-based methods<small>no weight updates · Abstract</small></div></div>
+          </div>
+        </div>
+
+        <div class="scene title-card" id="s6">
+          <div class="f-eyebrow">NeurIPS 2026 · Poster</div>
+          <h2 class="f-head">Mitigating Memorization Where It&nbsp;Happens</h2>
+          <div class="authors">Xuanqi Zhang* · Haoyang Shang* · Xiaoxiao Li
+            <small>The University of British Columbia · Vector Institute</small></div>
+          <div class="venue"><span class="pill">arXiv 2602.08901</span><span class="pill ghost">probe · gate · steer</span></div>
+        </div>
+
+        <div class="subs"><span id="subtitle"></span></div>
+        <div class="progress" id="bar"></div>
+      </div>
+    </div>
+    <audio id="track" preload="auto" src="soundtrack.mp3"></audio>
+
+    <div class="controls">
+      <button id="sound" class="primary" type="button">Sound on</button>
+      <button id="play" type="button">Pause</button>
+      <button id="restart" type="button">Restart</button>
+      <div class="scrub">
+        <input id="scrub" type="range" min="0" max="45" step="0.01" value="0" aria-label="Timeline">
+        <div class="marks" id="marks"></div>
+      </div>
+      <span class="time" id="time">0.0 s</span>
+      <label class="chk"><input id="subs" type="checkbox" checked> Subtitles</label>
+    </div>
+  </section>
+
+  <section>
+    <h2>Shot list</h2>
+    <div class="table-wrap">
+      <table>
+        <thead><tr><th>Time</th><th>Beat</th><th>Voiceover</th><th>On screen</th></tr></thead>
+        <tbody id="shots"></tbody>
+      </table>
+    </div>
+  </section>
+</div>
+
+<script>
+(function () {
+  const TIMING = JSON.parse(document.getElementById('timing').textContent);
+  const SCENES = [
+    { id: 's1', beat: 'Hook', vo: 'Language models can memorize their training data, and repeat it word for word.',
+      screen: '“Alice’s phone number is” completes with the memorized number, highlighted in clay. Tags: privacy, copyright.', ref: 'Introduction; Section 3 example' },
+    { id: 's2', beat: 'Problem', vo: 'Most fixes correct every token the same way, and the model gets worse at everything else.',
+      screen: 'A bar sweeps across every token and pushes all of them down. Then the cost: accuracy 97.0 → 63.3 for a pruning baseline.', ref: 'Fig. 3a; Table 1 (Slim, TinyMem math, noise)' },
+    { id: 's3', beat: 'Insight', vo: 'Compared with a reference model, the memorization signal is concentrated. Ten percent of tokens carry up to eighty-nine percent of it.',
+      screen: 'Per-token signal bars grow in. Most stay low, a few spike in clay. Stat: 10% of positions carry up to 89% of the signal.', ref: 'Fig. 1; Section 3 (30–89% across 12 settings)' },
+    { id: 's4', beat: 'Method', vo: 'So GSS fixes it only there. A probe reads each token, a gate checks a threshold, and a steer corrects just the flagged ones.',
+      screen: 'Tokens flow Probe → Gate. Flagged tokens rise through Steer and turn olive; the rest pass below, untouched.', ref: 'Fig. 2, Fig. 3b; Eq. 10; Theorem 4.1' },
+    { id: 's5', beat: 'Result', vo: 'On Pythia 6.9B, memorization falls from 89 to 7 percent, with ten to a hundred times less compute than optimization methods.',
+      screen: '89% → 7% counts down (Pythia‑6.9B). Then 0% on TinyMem with accuracy kept, and 10–100× less compute.', ref: 'Table 1, Table 2, Abstract' },
+    { id: 's6', beat: 'Close', vo: 'Mitigating Memorization Where It Happens. See you at NeurIPS.',
+      screen: 'Title, authors, affiliations, arXiv ID.', ref: 'Title page' }
+  ];
+  let acc = 0;
+  SCENES.forEach((s, i) => { s.a = acc; acc += TIMING.durations[i]; s.b = acc; s.v0 = s.a + TIMING.vo[i][0]; s.v1 = s.v0 + TIMING.vo[i][1]; });
+  const D = acc;
+
+  // Subtitles: split each voiceover at sentence and comma breaks, spread over its spoken time by length.
+  const SUBS = [];
+  SCENES.forEach((s) => {
+    const parts = s.vo.match(/[^.,;]+[.,;]?/g).map((p) => p.trim()).filter(Boolean);
+    const lines = []; parts.forEach((p) => { const l = lines[lines.length - 1]; if (l && (l + ' ' + p).length < 62 && !/[.]$/.test(l)) lines[lines.length - 1] = l + ' ' + p; else lines.push(p); });
+    const total = lines.reduce((n, l) => n + l.length, 0); let c = s.v0;
+    lines.forEach((l) => { const d = (s.v1 - s.v0) * l.length / total; SUBS.push([c, c + d + .15, l.replace(/,$/, '')]); c += d; });
+  });
+
+  const $ = (id) => document.getElementById(id);
+  const clamp = (x) => Math.max(0, Math.min(1, x));
+  const seg = (t, a, b) => clamp((t - a) / (b - a));
+  const ease = (x) => 1 - Math.pow(1 - x, 3);
+  const NS = 'http://www.w3.org/2000/svg';
+  const mk = (tag, attrs, parent) => { const e = document.createElementNS(NS, tag); for (const k in attrs) e.setAttribute(k, attrs[k]); parent && parent.appendChild(e); return e; };
+
+  /* 2 · token chips for the uniform-correction shot */
+  const CHIP = ['Alice’s', 'phone', 'number', 'is', '555', '-01', '42', '.', 'Solve', '3x', '+', '5', '=', '20'];
+  const chipsEl = $('chips');
+  const chips = CHIP.map((w, i) => { const c = document.createElement('span'); c.className = 'chip' + (i >= 4 && i <= 6 ? ' m' : ''); c.textContent = w; chipsEl.appendChild(c); return c; });
+  const sweep = document.createElement('div'); sweep.className = 'sweep'; chipsEl.appendChild(sweep);
+
+  /* 3 · right-skewed token signal */
+  const N = 48, peaks = { 6: .78, 7: .95, 18: .62, 29: .88, 30: 1, 31: .7, 41: .58 };
+  const vals = Array.from({ length: N }, (_, i) => peaks[i] ?? (0.05 + 0.13 * Math.abs(Math.sin(i * 2.3 + 1.1))));
+  const barsSvg = $('bars'), bw = 1360 / N;
+  mk('line', { x1: 0, x2: 1360, y1: 300, y2: 300, stroke: '#141413', 'stroke-width': 2 }, barsSvg);
+  const thr = mk('line', { x1: 0, x2: 1360, y1: 300 - .34 * 280, y2: 300 - .34 * 280, stroke: '#8A887F', 'stroke-width': 2, 'stroke-dasharray': '8 8' }, barsSvg);
+  const thrLab = mk('text', { x: 548, y: 300 - .34 * 280 - 12, fill: '#8A887F', 'font-family': 'JetBrains Mono, monospace', 'font-size': 18 }, barsSvg);
+  thrLab.textContent = 'most tokens: near zero';
+  const bars = vals.map((v, i) => mk('rect', { x: i * bw + 4, width: bw - 8, y: 300, height: 0, rx: 3, fill: v > .34 ? '#D97757' : '#E3DACC' }, barsSvg));
+
+  /* 4 · probe → gate → steer */
+  const flow = $('flow');
+  const Y = 560, UP = 420, DOWN = 700, X0 = 150, X1 = 1470;
+  const lane = (d, c, w, dash) => mk('path', { d, fill: 'none', stroke: c, 'stroke-width': w, 'stroke-dasharray': dash || '', 'stroke-linecap': 'round' }, flow);
+  lane(`M${X0} ${Y} H 760 C 860 ${Y}, 860 ${UP}, 960 ${UP} H ${X1}`, '#E3DACC', 4);
+  lane(`M760 ${Y} C 860 ${Y}, 860 ${DOWN}, 960 ${DOWN} H ${X1}`, '#E3DACC', 4, '2 12');
+  const FLAGS = [0, 1, 0, 0, 1, 0, 0, 0, 1, 0, 0, 1, 0, 0];
+  const dots = FLAGS.map((f) => mk('circle', { r: 15, cx: -50, cy: Y, fill: f ? '#D97757' : '#6A9BCC' }, flow));
+  function node(x, y, w, title, formula) {
+    const g = mk('g', {}, flow);
+    const r = mk('rect', { x: x - w / 2, y: y - 62, width: w, height: 124, rx: 16, fill: '#FAF9F5', stroke: '#141413', 'stroke-width': 2.5 }, g);
+    const t = mk('text', { x, y: y - 8, 'text-anchor': 'middle', 'font-family': 'DM Sans, sans-serif', 'font-size': 34, 'font-weight': 600, fill: '#141413' }, g); t.textContent = title;
+    const f = mk('text', { x, y: y + 34, 'text-anchor': 'middle', 'font-family': 'JetBrains Mono, monospace', 'font-size': 22, fill: '#5E5D58' }, g); f.textContent = formula;
+    return { g, r };
+  }
+  const nProbe = node(400, Y, 250, 'Probe', '⟨h, u⟩'), nGate = node(700, Y, 210, 'Gate', '> ε ?'), nSteer = node(1110, UP, 270, 'Steer', 'h − α·v');
+  const lab = (x, y, s, c) => { const t = mk('text', { x, y, 'font-family': 'JetBrains Mono, monospace', 'font-size': 20, fill: c || '#8A887F' }, flow); t.textContent = s; return t; };
+  const labUp = lab(1270, UP - 26, 'memorized → corrected', '#788C5D'), labDown = lab(1080, DOWN - 22, 'everything else → untouched');
+  const foot = mk('text', { x: 120, y: 318, 'font-family': 'DM Sans, sans-serif', 'font-size': 26, fill: '#5E5D58' }, flow);
+  foot.textContent = 'Closed-form directions from one SVD · no weight updates · no reference model at inference';
+  function dotPos(u, f) { const x = X0 + u * (X1 - X0); let y = Y; if (x > 760) { const k = ease(seg(x, 760, 960)); y = f ? Y + (UP - Y) * k : Y + (DOWN - Y) * k; } return [x, y]; }
+
+  /* shot list + timeline marks */
+  $('scrub').max = D;
+  const tbody = $('shots');
+  SCENES.forEach((s) => {
+    const tr = document.createElement('tr'); tr.className = 'row'; tr.tabIndex = 0;
+    tr.innerHTML = `<td class="t">${s.a.toFixed(1)}–${s.b.toFixed(1)}s</td><td><strong>${s.beat}</strong></td><td class="vo">“${s.vo}”</td><td>${s.screen}<span class="ref">${s.ref}</span></td>`;
+    const go = () => { seek(s.a + 0.01); setPlaying(true); };
+    tr.addEventListener('click', go); tr.addEventListener('keydown', (e) => { if (e.key === 'Enter' || e.key === ' ') { e.preventDefault(); go(); } });
+    tbody.appendChild(tr);
+    const m = document.createElement('span'); m.style.left = (s.a / D * 100) + '%'; m.textContent = s.beat; $('marks').appendChild(m);
+  });
+  $('marks').firstChild.style.transform = 'none';
+  const rows = [...tbody.children];
+
+  /* render one frame at time t (pure: used by the player and the MP4 export) */
+  function render(t) {
+    SCENES.forEach((s, i) => {
+      const el = $(s.id);
+      let o = (t >= s.a && t <= s.b) ? 1 : 0;
+      if (o && i > 0) o = Math.min(o, seg(t, s.a, s.a + .4));
+      if (o && i < SCENES.length - 1) o = Math.min(o, 1 - seg(t, s.b - .35, s.b));
+      el.style.opacity = o; el.style.visibility = o > 0 ? 'visible' : 'hidden';
+      el.style.transform = `translateY(${i ? (1 - ease(seg(t, s.a, s.a + .7))) * 18 : 0}px)`;
+      rows[i].classList.toggle('on', t >= s.a && t < s.b);
+    });
+    const L = (i) => t - SCENES[i].a;   // time inside scene i
+
+    // 1 · hook
+    document.querySelectorAll('#sentence .mem').forEach((el) => {
+      const k = +el.dataset.k, p = ease(seg(L(0), .9 + k * .4, 1.25 + k * .4));
+      el.style.opacity = p; el.style.transform = `translateY(${(1 - p) * 14}px)`;
+    });
+    const p1 = ease(seg(L(0), 2.6, 3.1)); $('s1sub').style.opacity = p1; $('s1tags').style.opacity = p1;
+
+    // 2 · a sweep pushes every token down, then the cost lands
+    const sw = seg(L(1), .9, 3.2), wrapW = chipsEl.scrollWidth;
+    sweep.style.left = (sw * wrapW) + 'px'; sweep.style.opacity = sw > 0 && sw < 1 ? 1 : 0;
+    chips.forEach((c) => {
+      const hit = ease(clamp((sw * wrapW - c.offsetLeft) / 60));
+      c.style.transform = `translateY(${hit * 16}px)`; c.style.opacity = 1 - hit * .55; c.style.filter = `saturate(${1 - hit})`;
+    });
+    const pc = ease(seg(L(1), 3.4, 3.9)); $('cost').style.opacity = pc; $('cost').style.transform = `translateY(${(1 - pc) * 16}px)`;
+
+    // 3 · bars grow, then the stat lands
+    bars.forEach((r, i) => { const h = vals[i] * 280 * ease(seg(L(2), .4 + i * .016, 1.1 + i * .016)); r.setAttribute('y', 300 - h); r.setAttribute('height', h); });
+    const pt = ease(seg(L(2), 1.6, 2.0)); thr.style.opacity = pt; thrLab.style.opacity = pt;
+    const ps = ease(seg(L(2), 3.6, 4.1)); $('stat2').style.opacity = ps; $('stat2').style.transform = `translateY(${(1 - ps) * 16}px)`;
+
+    // 4 · nodes appear in step with the voice, tokens flow
+    [nProbe, nGate, nSteer].forEach((n, i) => { n.g.style.opacity = ease(seg(L(3), 1.6 + i * 1.3, 2.0 + i * 1.3)); });
+    labUp.style.opacity = labDown.style.opacity = ease(seg(L(3), 5.0, 5.4));
+    foot.style.opacity = ease(seg(L(3), 6.8, 7.2));
+    let gateHot = false;
+    dots.forEach((d, i) => {
+      const u = seg(L(3), 2.2 + i * .45, 4.8 + i * .45), f = FLAGS[i];
+      if (u <= 0 || u >= 1) { d.style.opacity = 0; return; }
+      const [x, y] = dotPos(u, f);
+      d.setAttribute('cx', x); d.setAttribute('cy', y); d.style.opacity = Math.min(1, u * 12, (1 - u) * 12);
+      if (f) { d.setAttribute('fill', x > 1110 ? '#788C5D' : '#D97757'); if (x > 600 && x < 820) gateHot = true; }
+    });
+    nGate.r.setAttribute('stroke', gateHot ? '#D97757' : '#141413'); nGate.r.setAttribute('stroke-width', gateHot ? 4 : 2.5);
+
+    // 5 · results, timed to the voice
+    const c = ease(seg(L(4), .9, 2.4));
+    $('count').textContent = Math.round(89.31 - (89.31 - 6.96) * c) + '%';
+    $('count').style.color = c > .02 ? '#D97757' : '';
+    $('r2').style.opacity = ease(seg(L(4), 3.2, 3.6));
+    $('r3').style.opacity = ease(seg(L(4), 4.4, 4.8));
+
+    const sub = SUBS.find(([a, b]) => t >= a && t < b);
+    $('subtitle').textContent = sub ? sub[2] : '';
+    $('subtitle').parentElement.style.opacity = sub ? 1 : 0;
+    $('bar').style.width = (t / D * 100) + '%';
+  }
+
+  /* player: the audio track is the clock when sound is on */
+  const frame = $('frame'), vp = $('viewport'), audio = $('track');
+  const fit = () => { frame.style.transform = `scale(${vp.clientWidth / 1600})`; };
+  new ResizeObserver(fit).observe(vp); fit();
+  const exportMode = /[?&]export/.test(location.search);
+  if (exportMode) { document.documentElement.classList.add('export'); fit(); }
+
+  let t = 0, playing = !exportMode, soundOn = false, last = performance.now();
+  if (matchMedia('(prefers-reduced-motion: reduce)').matches) { playing = false; t = SCENES[2].a + 4.5; }
+
+  function seek(x) {
+    t = Math.max(0, Math.min(D, x)); $('scrub').value = t; $('time').textContent = `${t.toFixed(1)} / ${D.toFixed(1)} s`; render(t);
+    if (soundOn && Math.abs(audio.currentTime - t) > .25) { try { audio.currentTime = t; } catch (e) {} }
+  }
+  function syncAudio() { if (!soundOn) { audio.pause(); return; } try { audio.currentTime = t; } catch (e) {} if (playing) audio.play().catch(() => {}); else audio.pause(); }
+  function setPlaying(p) { playing = p; $('play').textContent = p ? 'Pause' : 'Play'; last = performance.now(); syncAudio(); }
+  $('play').addEventListener('click', () => { if (!playing && t >= D) seek(0); setPlaying(!playing); });
+  $('restart').addEventListener('click', () => { seek(0); setPlaying(true); });
+  $('sound').addEventListener('click', () => {
+    soundOn = !soundOn; $('sound').textContent = soundOn ? 'Sound off' : 'Sound on'; $('sound').classList.toggle('primary', !soundOn);
+    if (soundOn && !playing) { if (t >= D) seek(0); setPlaying(true); } else syncAudio();
+  });
+  $('scrub').addEventListener('input', (e) => { setPlaying(false); seek(+e.target.value); });
+  $('subs').addEventListener('change', (e) => frame.classList.toggle('nosubs', !e.target.checked));
+
+  function tick(now) {
+    if (playing) {
+      if (soundOn && !audio.paused && audio.currentTime > 0) { t = audio.currentTime; seek(t); }
+      else seek(t + (now - last) / 1000);
+      if (t >= D) { setPlaying(false); }
+    }
+    last = now; requestAnimationFrame(tick);
+  }
+  setPlaying(playing); seek(t); requestAnimationFrame(tick);
+  window.__renderAt = (x) => { playing = false; seek(x); };
+  window.__duration = D;
+})();
+</script>
